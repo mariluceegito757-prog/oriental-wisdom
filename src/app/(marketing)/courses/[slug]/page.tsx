@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { InkBrushDivider } from "@/components/chinese-culture/ink-brush-divider";
+import { CourseSchema, BreadcrumbSchema } from "@/components/chinese-culture/structured-data";
 import { EnrollButton } from "./enroll-button";
 
 interface Props {
@@ -41,6 +42,15 @@ export default async function CourseDetailPage({ params }: Props) {
     : null;
 
   return (
+    <>
+      <CourseSchema title={course.title} description={course.description} slug={course.slug} />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://oriental-wisdom.vercel.app" },
+          { name: "Courses", url: "https://oriental-wisdom.vercel.app/courses" },
+          { name: course.title, url: `https://oriental-wisdom.vercel.app/courses/${course.slug}` },
+        ]}
+      />
     <div className="mx-auto max-w-4xl px-6 py-16">
       <Link href="/courses" className="inline-block mb-8 text-sm text-ink-muted hover:text-ink transition-colors">
         &larr; Back to Courses
@@ -106,5 +116,6 @@ export default async function CourseDetailPage({ params }: Props) {
 
       <InkBrushDivider />
     </div>
+    </>
   );
 }

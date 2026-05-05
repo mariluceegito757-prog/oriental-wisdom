@@ -6,20 +6,21 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { InkBrushDivider } from "@/components/chinese-culture/ink-brush-divider";
 import { GlossaryTooltip } from "@/components/chinese-culture/glossary-tooltip";
+import { getAllPosts } from "@/lib/blog";
 
 const featuredCategories = [
   {
     title: "Ba Zi",
     subtitle: "The Four Pillars of Destiny",
     description: "Uncover your life blueprint through the ancient art of Eight Characters astrology.",
-    href: "/blog?category=bazi",
+    href: "/blog?category=ba-zi",
     badge: "Most Popular",
   },
   {
     title: "Zi Wei Dou Shu",
     subtitle: "Purple Star Astrology",
     description: "Chart your destiny across 12 palaces and 100+ stars with this sophisticated system.",
-    href: "/blog?category=ziwei",
+    href: "/blog?category=zi-wei-dou-shu",
     badge: "Advanced",
   },
   {
@@ -31,31 +32,9 @@ const featuredCategories = [
   },
 ];
 
-const featuredArticles = [
-  {
-    title: "What Your Ba Zi Chart Reveals About Your Life Path",
-    slug: "bazi-life-path",
-    description: "A beginner-friendly introduction to reading the Four Pillars and understanding what each pillar represents.",
-    category: "ba-zi",
-    date: "2026-04-28",
-  },
-  {
-    title: "The Five Elements: A Complete Guide to Wu Xing",
-    slug: "five-elements-complete-guide",
-    description: "Explore the generating and controlling cycles that govern all phenomena in Chinese metaphysics.",
-    category: "five-elements",
-    date: "2026-04-20",
-  },
-  {
-    title: "Zi Wei Dou Shu: Understanding the 12 Palaces",
-    slug: "ziwei-12-palaces",
-    description: "Each palace in a Zi Wei chart governs a different aspect of life — from career to relationships.",
-    category: "zi-wei-dou-shu",
-    date: "2026-04-15",
-  },
-];
-
 export default function Home() {
+  const allPosts = getAllPosts();
+  const featuredArticles = allPosts.slice(0, 3);
   return (
     <>
       <Header />
@@ -171,11 +150,13 @@ export default function Home() {
                     {article.description}
                   </p>
                   <time className="mt-4 block text-xs text-ink-muted/60">
-                    {new Date(article.date).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
+                    {article.publishedAt
+                      ? new Date(article.publishedAt).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })
+                      : ""}
                   </time>
                 </Card>
               </Link>

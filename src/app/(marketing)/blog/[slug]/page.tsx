@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { InkBrushDivider } from "@/components/chinese-culture/ink-brush-divider";
 import remarkGfm from "remark-gfm";
+import { ArticleSchema, BreadcrumbSchema } from "@/components/chinese-culture/structured-data";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -41,6 +42,20 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound();
 
   return (
+    <>
+      <ArticleSchema
+        title={post.meta.title}
+        description={post.meta.description}
+        datePublished={post.meta.publishedAt}
+        slug={post.meta.slug}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://oriental-wisdom.vercel.app" },
+          { name: "Blog", url: "https://oriental-wisdom.vercel.app/blog" },
+          { name: post.meta.title, url: `https://oriental-wisdom.vercel.app/blog/${post.meta.slug}` },
+        ]}
+      />
     <article className="mx-auto max-w-3xl px-6 py-16">
       <Link
         href="/blog"
@@ -89,5 +104,6 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
       )}
     </article>
+    </>
   );
 }

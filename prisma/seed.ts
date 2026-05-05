@@ -190,6 +190,196 @@ async function main() {
     },
   });
 
+  const iching = await prisma.course.upsert({
+    where: { slug: "i-ching-wisdom" },
+    update: {},
+    create: {
+      slug: "i-ching-wisdom",
+      title: "I Ching: Wisdom of the Book of Changes",
+      subtitle: "Learn to consult and interpret the 64 hexagrams",
+      description:
+        "Journey through the world's oldest oracle — understand the 64 hexagrams, learn traditional casting methods, and develop the art of interpretation for guidance in love, career, and life decisions.",
+      price: 16900,
+      level: "Intermediate",
+      published: true,
+      lessons: {
+        create: [
+          {
+            slug: "what-is-i-ching",
+            title: "What Is the I Ching?",
+            description: "History, philosophy, and the cosmology of change.",
+            content: `## What Is the I Ching?\n\nThe Book of Changes is the world's oldest continuously used oracle...`,
+            order: 1,
+            freePreview: true,
+          },
+          {
+            slug: "yin-yang-lines",
+            title: "Yin, Yang, and the Lines",
+            description: "The building blocks of every hexagram.",
+            content: `## Yin, Yang, and the Lines\n\nEach line is either solid (Yang) or broken (Yin)...`,
+            order: 2,
+            freePreview: false,
+          },
+          {
+            slug: "the-eight-trigrams",
+            title: "The Eight Trigrams (Ba Gua)",
+            description: "The eight fundamental three-line figures.",
+            content: `## The Eight Trigrams\n\nQian, Kun, Zhen, Xun, Kan, Li, Gen, Dui...`,
+            order: 3,
+            freePreview: false,
+          },
+          {
+            slug: "casting-methods",
+            title: "Casting Methods",
+            description: "Coins, yarrow stalks, and Plum Blossom technique.",
+            content: `## Casting Methods\n\nThree coins, fifty yarrow stalks, or Plum Blossom...`,
+            order: 4,
+            freePreview: false,
+          },
+          {
+            slug: "reading-the-judgment",
+            title: "Reading the Judgment",
+            description: "The main hexagram text and how to interpret it.",
+            content: `## Reading the Judgment\n\nEach of the 64 hexagrams has a Judgment and Image...`,
+            order: 5,
+            freePreview: false,
+          },
+          {
+            slug: "line-texts",
+            title: "Interpreting the Line Texts",
+            description: "How changing lines modify the reading.",
+            content: `## Interpreting the Line Texts\n\nEach line text speaks to a specific situation...`,
+            order: 6,
+            freePreview: false,
+          },
+          {
+            slug: "nuclear-hexagrams",
+            title: "Nuclear Hexagrams & Transformations",
+            description: "The hidden hexagram within every hexagram.",
+            content: `## Nuclear Hexagrams\n\nEvery hexagram contains a hidden nuclear hexagram...`,
+            order: 7,
+            freePreview: false,
+          },
+          {
+            slug: "practical-consultation",
+            title: "Practical Consultation",
+            description: "Putting it all together — live readings.",
+            content: `## Practical Consultation\n\nNow we practice full consultations...`,
+            order: 8,
+            freePreview: false,
+          },
+          {
+            slug: "i-ching-daily",
+            title: "I Ching as a Daily Practice",
+            description: "Building a personal relationship with the oracle.",
+            content: `## I Ching as a Daily Practice\n\nThe I Ching is not just for crisis moments...`,
+            order: 9,
+            freePreview: false,
+          },
+        ],
+      },
+    },
+  });
+
+  const ziwei = await prisma.course.upsert({
+    where: { slug: "ziwei-foundations" },
+    update: {},
+    create: {
+      slug: "ziwei-foundations",
+      title: "Zi Wei Dou Shu Foundations",
+      subtitle: "Chart the stars and read the 12 palaces",
+      description:
+        "Learn the fundamentals of Purple Star Astrology — charting the 12 palaces, understanding 14 major stars, and interpreting career, wealth, relationships, and health through this sophisticated system.",
+      price: 19900,
+      level: "Intermediate",
+      published: true,
+      lessons: {
+        create: [
+          {
+            slug: "what-is-ziwei",
+            title: "What Is Zi Wei Dou Shu?",
+            description: "History and overview of Purple Star Astrology.",
+            content: `## What Is Zi Wei Dou Shu?\n\nZi Wei Dou Shu means "Purple Star Astrology"...`,
+            order: 1,
+            freePreview: true,
+          },
+          {
+            slug: "the-twelve-palaces",
+            title: "The Twelve Palaces",
+            description: "Mapping the 12 life areas in a Zi Wei chart.",
+            content: `## The Twelve Palaces\n\nEach palace governs a different life domain...`,
+            order: 2,
+            freePreview: false,
+          },
+          {
+            slug: "major-stars",
+            title: "The 14 Major Stars",
+            description: "Zi Wei, Tian Fu, Tai Yang, Wu Qu, and more.",
+            content: `## The 14 Major Stars\n\nEach major star has a unique character and influence...`,
+            order: 3,
+            freePreview: false,
+          },
+          {
+            slug: "minor-stars",
+            title: "Minor Stars and Transformations",
+            description: "Auxiliary stars and how they modify major star energies.",
+            content: `## Minor Stars\n\nDozens of minor stars add nuance to the reading...`,
+            order: 4,
+            freePreview: false,
+          },
+          {
+            slug: "four-transformers",
+            title: "The Four Transformers (Si Hua)",
+            description: "Hua Lu, Hua Quan, Hua Ke, Hua Ji — the energy modifiers.",
+            content: `## The Four Transformers\n\nThese four energies transform the quality of each star they touch...`,
+            order: 5,
+            freePreview: false,
+          },
+          {
+            slug: "charting-basics",
+            title: "Charting the Zi Wei Chart",
+            description: "Step-by-step chart construction.",
+            content: `## Charting the Zi Wei Chart\n\nStarting from birth data, we place every star...`,
+            order: 6,
+            freePreview: false,
+          },
+          {
+            slug: "palace-relationships",
+            title: "Palace Relationships",
+            description: "How palaces interact and influence each other.",
+            content: `## Palace Relationships\n\nOpposing palaces, triads, and six-harmonies...`,
+            order: 7,
+            freePreview: false,
+          },
+          {
+            slug: "reading-career-wealth",
+            title: "Reading Career & Wealth",
+            description: "Focusing on the career and wealth palaces.",
+            content: `## Reading Career & Wealth\n\nThe Career Palace and Wealth Palace reveal professional destiny...`,
+            order: 8,
+            freePreview: false,
+          },
+          {
+            slug: "reading-relationships",
+            title: "Reading Relationships & Health",
+            description: "The Spouse, Travel, and Health palaces.",
+            content: `## Reading Relationships & Health\n\nLove, marriage, and physical well-being in the chart...`,
+            order: 9,
+            freePreview: false,
+          },
+          {
+            slug: "full-chart-synthesis",
+            title: "Full Chart Synthesis",
+            description: "Weaving all elements into a complete reading.",
+            content: `## Full Chart Synthesis\n\nThe art is in seeing how all parts interact...`,
+            order: 10,
+            freePreview: false,
+          },
+        ],
+      },
+    },
+  });
+
   // Seed consultation types
   await prisma.consultationType.upsert({
     where: { slug: "bazi-reading" },
@@ -215,6 +405,20 @@ async function main() {
         "Explore all 12 palaces of your Purple Star chart for detailed insights into career, relationships, wealth, and health.",
       duration: 75,
       price: 15000,
+      published: true,
+    },
+  });
+
+  await prisma.consultationType.upsert({
+    where: { slug: "annual-forecast" },
+    update: {},
+    create: {
+      slug: "annual-forecast",
+      name: "Annual Luck Forecast",
+      description:
+        "A focused analysis of your upcoming year — understand the annual energies, favorable months, and key opportunities in your Ba Zi and Zi Wei charts for the year ahead.",
+      duration: 45,
+      price: 9500,
       published: true,
     },
   });

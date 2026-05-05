@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Noto_Serif_SC } from "next/font/google";
+import { SkipToContent } from "@/components/layout/skip-to-content";
+import { OrganizationSchema, WebSiteSchema } from "@/components/chinese-culture/structured-data";
 import "./globals.css";
 
 const inter = Inter({
@@ -52,6 +54,9 @@ export default function RootLayout({
       className={`${inter.variable} ${notoSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-paper text-ink">
+        <SkipToContent />
+        <OrganizationSchema />
+        <WebSiteSchema />
         {children}
       </body>
     </html>

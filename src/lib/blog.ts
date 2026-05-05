@@ -47,7 +47,7 @@ export function getAllPosts(): BlogMeta[] {
 
   let files: string[];
   try {
-    files = fs.readdirSync(contentDir).filter((f) => f.endsWith(".mdx"));
+    files = fs.readdirSync(contentDir).filter((f) => f.endsWith(".mdx") || f.endsWith(".md"));
   } catch {
     return [];
   }
