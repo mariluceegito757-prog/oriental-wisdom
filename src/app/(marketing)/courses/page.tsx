@@ -11,6 +11,8 @@ export const metadata: Metadata = {
     "Structured courses on Ba Zi, Zi Wei Dou Shu, Five Elements, and Chinese metaphysics.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function CoursesPage() {
   const courses = await prisma.course.findMany({
     where: { published: true },
