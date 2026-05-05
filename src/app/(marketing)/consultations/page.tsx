@@ -18,6 +18,8 @@ async function getConsultationTypes() {
   });
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function ConsultationsPage() {
   const types = await getConsultationTypes();
 
