@@ -3,6 +3,7 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
+import { sendBookingConfirmation } from "@/lib/email";
 import type Stripe from "stripe";
 
 export async function POST(req: Request) {
@@ -127,6 +128,41 @@ export async function POST(req: Request) {
     } catch (error) {
       console.error("Failed to process consultation webhook", error);
       return NextResponse.json({ error: "Processing failed" }, { status: 500 });
+    }
+
+    // Send confirmation email (fire-and-forget, don't block response)
+    try {
+      const [user, ct] = await Promise.all([
+        prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } }),
+        prisma.consultationType.findUnique({ where: { id: consultationTypeId }, select: { name: true, duration: true } }),
+      ]);
+      if (user?.email && ct) {
+        const startDate = new Date(startTime);
+        const endDate = new Date(endTime);
+        const timeLabel = `${startDate.toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+        })} — ${endDate.toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+        })}`;
+        const dateLabel = startDate.toLocaleDateString("en-US", {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        });
+        await sendBookingConfirmation({
+          to: user.email,
+          name: user.name ?? "there",
+          consultationName: ct.name,
+          date: dateLabel,
+          time: timeLabel,
+          duration: ct.duration,
+        });
+      }
+    } catch (emailError) {
+      console.error("Failed to send confirmation email:", emailError);
     }
   } else {
     return NextResponse.json({ error: "Unknown type" }, { status: 400 });
