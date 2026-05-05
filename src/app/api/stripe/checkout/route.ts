@@ -11,14 +11,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let type: string;
-  let itemId: string;
+  let body: Record<string, unknown>;
   try {
-    const body = await req.json();
-    type = body.type;
-    itemId = body.itemId;
+    body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+
+  const type = body.type as string | undefined;
+  if (!type) {
+    return NextResponse.json({ error: "Missing type" }, { status: 400 });
   }
 
   let price: number;
@@ -26,6 +28,9 @@ export async function POST(req: Request) {
   const metadata: Record<string, string> = {};
 
   if (type === "COURSE") {
+    const itemId = body.itemId as string | undefined;
+    if (!itemId) return NextResponse.json({ error: "Missing itemId" }, { status: 400 });
+
     const course = await prisma.course.findUnique({ where: { slug: itemId } });
     if (!course) return NextResponse.json({ error: "Course not found" }, { status: 404 });
 
@@ -40,7 +45,6 @@ export async function POST(req: Request) {
     metadata.itemId = course.id;
     metadata.userId = session.user.id;
 
-    // Free course: create enrollment directly, skip Stripe
     if (price === 0) {
       await prisma.enrollment.create({
         data: { userId: session.user.id, courseId: course.id },
@@ -48,14 +52,46 @@ export async function POST(req: Request) {
       return NextResponse.json({ url: `${BASE_URL}/courses/${course.slug}?enrolled=1` });
     }
   } else if (type === "CONSULTATION") {
-    const ct = await prisma.consultationType.findUnique({ where: { slug: itemId } });
+    const consultationTypeId = body.consultationTypeId as string | undefined;
+    const startTime = body.startTime as string | undefined;
+    const endTime = body.endTime as string | undefined;
+    const notes = body.notes as string | undefined;
+
+    if (!consultationTypeId) {
+      return NextResponse.json({ error: "Missing consultationTypeId" }, { status: 400 });
+    }
+    if (!startTime || !endTime) {
+      return NextResponse.json({ error: "Missing time slot" }, { status: 400 });
+    }
+
+    const ct = await prisma.consultationType.findUnique({
+      where: { id: consultationTypeId },
+    });
     if (!ct) return NextResponse.json({ error: "Consultation type not found" }, { status: 404 });
+
+    // Check slot is not already booked
+    const conflictingSlot = await prisma.timeSlot.findFirst({
+      where: {
+        consultationTypeId: ct.id,
+        startTime: new Date(startTime),
+        booked: true,
+      },
+    });
+    if (conflictingSlot) {
+      return NextResponse.json(
+        { error: "This time slot is no longer available. Please choose another." },
+        { status: 400 }
+      );
+    }
 
     price = ct.price;
     name = ct.name;
     metadata.type = "CONSULTATION";
-    metadata.itemId = ct.id;
+    metadata.consultationTypeId = ct.id;
     metadata.userId = session.user.id;
+    metadata.startTime = startTime;
+    metadata.endTime = endTime;
+    metadata.notes = notes ?? "";
   } else {
     return NextResponse.json({ error: "Invalid type" }, { status: 400 });
   }

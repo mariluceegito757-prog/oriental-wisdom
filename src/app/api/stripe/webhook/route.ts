@@ -26,42 +26,110 @@ export async function POST(req: Request) {
     return NextResponse.json({ received: true });
   }
 
-  const session = event.data.object as Stripe.Checkout.Session;
-  const { type, itemId, userId } = session.metadata ?? {};
+  const checkoutSession = event.data.object as Stripe.Checkout.Session;
+  const metadata = checkoutSession.metadata ?? {};
+  const type = metadata.type;
+  const userId = metadata.userId;
 
-  if (!type || !itemId || !userId) {
-    console.error("Missing metadata in checkout session", session.id);
+  if (!type || !userId) {
+    console.error("Missing metadata in checkout session", checkoutSession.id);
     return NextResponse.json({ error: "Missing metadata" }, { status: 400 });
   }
 
-  // Idempotency: check for existing order before creating
+  // Idempotency
   const existing = await prisma.order.findUnique({
-    where: { stripeSessionId: session.id },
+    where: { stripeSessionId: checkoutSession.id },
   });
   if (existing) {
     return NextResponse.json({ received: true });
   }
 
-  const amount = session.amount_total ?? 0;
-  const currency = (session.currency ?? "usd").toLowerCase();
+  const amount = checkoutSession.amount_total ?? 0;
+  const currency = (checkoutSession.currency ?? "usd").toLowerCase();
 
-  try {
-    await prisma.$transaction(async (tx) => {
-      await tx.order.create({
-        data: { userId, stripeSessionId: session.id, type, itemId, amount, currency, status: "PAID" },
-      });
+  if (type === "COURSE") {
+    const courseId = metadata.itemId;
+    if (!courseId) {
+      console.error("Missing itemId for course", checkoutSession.id);
+      return NextResponse.json({ error: "Missing itemId" }, { status: 400 });
+    }
 
-      if (type === "COURSE") {
+    try {
+      await prisma.$transaction(async (tx) => {
+        await tx.order.create({
+          data: {
+            userId,
+            stripeSessionId: checkoutSession.id,
+            type: "COURSE",
+            itemId: courseId,
+            amount,
+            currency,
+            status: "PAID",
+          },
+        });
         await tx.enrollment.upsert({
-          where: { userId_courseId: { userId, courseId: itemId } },
-          create: { userId, courseId: itemId },
+          where: { userId_courseId: { userId, courseId } },
+          create: { userId, courseId },
           update: {},
         });
-      }
-    });
-  } catch (error) {
-    console.error("Failed to process webhook", error);
-    return NextResponse.json({ error: "Processing failed" }, { status: 500 });
+      });
+    } catch (error) {
+      console.error("Failed to process course webhook", error);
+      return NextResponse.json({ error: "Processing failed" }, { status: 500 });
+    }
+  } else if (type === "CONSULTATION") {
+    const consultationTypeId = metadata.consultationTypeId;
+    const startTime = metadata.startTime;
+    const endTime = metadata.endTime;
+    const notes = metadata.notes ?? null;
+
+    if (!consultationTypeId || !startTime || !endTime) {
+      console.error("Missing consultation metadata", checkoutSession.id);
+      return NextResponse.json({ error: "Missing consultation metadata" }, { status: 400 });
+    }
+
+    try {
+      await prisma.$transaction(async (tx) => {
+        // Create the time slot
+        const timeSlot = await tx.timeSlot.create({
+          data: {
+            consultationTypeId,
+            startTime: new Date(startTime),
+            endTime: new Date(endTime),
+            booked: true,
+          },
+        });
+
+        // Create the booking
+        await tx.booking.create({
+          data: {
+            userId,
+            timeSlotId: timeSlot.id,
+            consultationTypeId,
+            status: "CONFIRMED",
+            notes,
+          },
+        });
+
+        // Create the order
+        await tx.order.create({
+          data: {
+            userId,
+            stripeSessionId: checkoutSession.id,
+            type: "CONSULTATION",
+            itemId: consultationTypeId,
+            amount,
+            currency,
+            status: "PAID",
+          },
+        });
+      });
+    } catch (error) {
+      console.error("Failed to process consultation webhook", error);
+      return NextResponse.json({ error: "Processing failed" }, { status: 500 });
+    }
+  } else {
+    return NextResponse.json({ error: "Unknown type" }, { status: 400 });
   }
 
   return NextResponse.json({ received: true });
