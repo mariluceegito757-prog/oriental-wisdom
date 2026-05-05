@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          String    @default("USER") // USER | ADMIN
+  birthDate     DateTime?
+  birthHour     String?   // Two-hour period for Ba Zi (e.g. "子 23-01")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  enrollments   Enrollment[]
+  bookings      Booking[]
+  orders        Order[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  subtitle    String
+  description String
+  price       Int      // cents
+  thumbnail   String?
+  level       String   // Beginner | Intermediate | Advanced | All Levels
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  lessons     Lesson[]
+  enrollments Enrollment[]
+}
+
+model Lesson {
+  id          String  @id @default(cuid())
+  courseId    String
+  slug        String
+  title       String
+  description String?
+  content     String  // MDX content
+  order       Int
+  freePreview Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, slug])
+}
+
+model Enrollment {
+  id          String    @id @default(cuid())
+  userId      String
+  courseId    String
+  progress    Int       @default(0) // completed lesson count
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+model ConsultationType {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  description String
+  duration    Int     // minutes
+  price       Int     // cents
+  published   Boolean @default(false)
+  createdAt   DateTime @default(now())
+
+  timeSlots TimeSlot[]
+  bookings  Booking[]
+}
+
+model TimeSlot {
+  id                 String    @id @default(cuid())
+  consultationTypeId String
+  startTime          DateTime
+  endTime            DateTime
+  booked             Boolean   @default(false)
+
+  consultationType ConsultationType @relation(fields: [consultationTypeId], references: [id], onDelete: Cascade)
+  booking          Booking?
+}
+
+model Booking {
+  id          String    @id @default(cuid())
+  userId      String
+  timeSlotId  String    @unique
+  status      String    @default("CONFIRMED") // CONFIRMED | CANCELLED | COMPLETED
+  notes       String?
+  meetingLink String?
+  createdAt   DateTime  @default(now())
+
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  timeSlot          TimeSlot          @relation(fields: [timeSlotId], references: [id], onDelete: Cascade)
+  consultationType  ConsultationType  @relation(fields: [consultationTypeId], references: [id])
+  consultationTypeId String
+}
+
+model Order {
+  id              String    @id @default(cuid())
+  userId          String
+  stripeSessionId String    @unique
+  type            String    // COURSE | CONSULTATION
+  itemId          String    // courseId or consultationTypeId
+  amount          Int       // cents
+  currency        String    @default("usd")
+  status          String    @default("PENDING") // PENDING | PAID | REFUNDED | CANCELLED
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

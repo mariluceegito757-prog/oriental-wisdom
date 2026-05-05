@@ -1,65 +1,221 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { InkBrushDivider } from "@/components/chinese-culture/ink-brush-divider";
+import { GlossaryTooltip } from "@/components/chinese-culture/glossary-tooltip";
+
+const featuredCategories = [
+  {
+    title: "Ba Zi",
+    subtitle: "The Four Pillars of Destiny",
+    description: "Uncover your life blueprint through the ancient art of Eight Characters astrology.",
+    href: "/blog?category=bazi",
+    badge: "Most Popular",
+  },
+  {
+    title: "Zi Wei Dou Shu",
+    subtitle: "Purple Star Astrology",
+    description: "Chart your destiny across 12 palaces and 100+ stars with this sophisticated system.",
+    href: "/blog?category=ziwei",
+    badge: "Advanced",
+  },
+  {
+    title: "Five Elements",
+    subtitle: "Wu Xing Philosophy",
+    description: "Understand the dynamic cycles of Wood, Fire, Earth, Metal, and Water in nature and life.",
+    href: "/blog?category=five-elements",
+    badge: "Foundational",
+  },
+];
+
+const featuredArticles = [
+  {
+    title: "What Your Ba Zi Chart Reveals About Your Life Path",
+    slug: "bazi-life-path",
+    description: "A beginner-friendly introduction to reading the Four Pillars and understanding what each pillar represents.",
+    category: "ba-zi",
+    date: "2026-04-28",
+  },
+  {
+    title: "The Five Elements: A Complete Guide to Wu Xing",
+    slug: "five-elements-complete-guide",
+    description: "Explore the generating and controlling cycles that govern all phenomena in Chinese metaphysics.",
+    category: "five-elements",
+    date: "2026-04-20",
+  },
+  {
+    title: "Zi Wei Dou Shu: Understanding the 12 Palaces",
+    slug: "ziwei-12-palaces",
+    description: "Each palace in a Zi Wei chart governs a different aspect of life — from career to relationships.",
+    category: "zi-wei-dou-shu",
+    date: "2026-04-15",
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <>
+      <Header />
+
+      <main className="flex-1">
+        {/* Hero */}
+        <section className="relative mx-auto max-w-7xl px-6 pt-24 pb-16 text-center md:pt-36 md:pb-24">
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(circle at 50% 0%, rgba(196, 30, 58, 0.06) 0%, transparent 60%)",
+            }}
+            aria-hidden
+          />
+
+          <Badge variant="vermilion" className="mb-6">
+            Ancient Wisdom for Modern Seekers
+          </Badge>
+
+          <h1 className="mx-auto max-w-3xl font-serif text-4xl font-bold leading-tight tracking-tight text-ink md:text-5xl lg:text-6xl">
+            Discover the Depth of{" "}
+            <span className="text-vermilion">Chinese Metaphysics</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-ink-muted">
+            Explore{" "}
+            <GlossaryTooltip term="Ba Zi" />,{" "}
+            <GlossaryTooltip term="Zi Wei Dou Shu" />,{" "}
+            <GlossaryTooltip term="Wu Xing" />, and{" "}
+            <GlossaryTooltip term="Dao" />
+            {" "}through in-depth articles, structured courses, and personal consultations with experienced practitioners.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
+          <div className="mt-10 flex items-center justify-center gap-4">
+            <Link href="/courses">
+              <Button variant="vermilion" size="lg">
+                Explore Courses
+              </Button>
+            </Link>
+            <Link href="/blog">
+              <Button variant="secondary" size="lg">
+                Read the Blog
+              </Button>
+            </Link>
+          </div>
+        </section>
+
+        <InkBrushDivider />
+
+        {/* Categories */}
+        <section className="mx-auto max-w-7xl px-6 py-16">
+          <h2 className="text-center font-serif text-3xl font-bold text-ink">
+            Paths of Study
+          </h2>
+          <p className="mt-3 text-center text-ink-muted">
+            Choose your entry point into the world of Chinese wisdom
+          </p>
+
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            {featuredCategories.map((cat) => (
+              <Link key={cat.title} href={cat.href} className="no-underline">
+                <Card hover className="h-full">
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="font-serif text-xl font-bold text-ink">
+                      {cat.title}
+                    </h3>
+                    <Badge variant="gold">{cat.badge}</Badge>
+                  </div>
+                  <p className="text-sm font-medium text-ink-muted mb-2">
+                    {cat.subtitle}
+                  </p>
+                  <p className="text-sm text-ink-muted leading-relaxed">
+                    {cat.description}
+                  </p>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Featured Articles */}
+        <section className="mx-auto max-w-7xl px-6 py-16">
+          <div className="flex items-center justify-between mb-10">
+            <div>
+              <h2 className="font-serif text-3xl font-bold text-ink">
+                Latest Insights
+              </h2>
+              <p className="mt-2 text-ink-muted">
+                New articles on Chinese metaphysics and philosophy
+              </p>
+            </div>
+            <Link href="/blog">
+              <Button variant="secondary">View All Articles</Button>
+            </Link>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {featuredArticles.map((article) => (
+              <Link
+                key={article.slug}
+                href={`/blog/${article.slug}`}
+                className="no-underline"
+              >
+                <Card hover className="h-full">
+                  <Badge variant="jade" className="mb-3">
+                    {article.category}
+                  </Badge>
+                  <h3 className="font-serif text-lg font-bold text-ink leading-snug mb-2">
+                    {article.title}
+                  </h3>
+                  <p className="text-sm text-ink-muted leading-relaxed">
+                    {article.description}
+                  </p>
+                  <time className="mt-4 block text-xs text-ink-muted/60">
+                    {new Date(article.date).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </time>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="mx-auto max-w-7xl px-6 py-16">
+          <div className="rounded-2xl bg-ink p-12 text-center md:p-16">
+            <h2 className="font-serif text-3xl font-bold text-paper md:text-4xl">
+              Begin Your Journey Today
+            </h2>
+            <p className="mx-auto mt-4 max-w-lg text-paper-dark/80 leading-relaxed">
+              Whether you&apos;re seeking self-understanding through{" "}
+              <GlossaryTooltip term="Ba Zi" />, or curious about the ancient art
+              of <GlossaryTooltip term="Zi Wei Dou Shu" />, our courses and
+              consultations will guide you step by step.
+            </p>
+            <div className="mt-8 flex items-center justify-center gap-4">
+              <Link href="/register">
+                <Button variant="gold" size="lg">
+                  Get Started Free
+                </Button>
+              </Link>
+              <Link href="/consultations">
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="border-paper-dark/30 text-paper-dark hover:text-paper hover:bg-paper/10"
+                >
+                  Book a Consultation
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
-    </div>
+
+      <Footer />
+    </>
   );
 }
